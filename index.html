@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潛意識畫布 | AI 夢境深度解析</title>
+<meta name="description" content="結合榮格心理學、佛洛伊德理論與認知神經科學的 AI 夢境解析工具。由 Gemini AI 驅動。">
+<meta name="theme-color" content="#0c0826">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-deep:#06060f;--bg-panel:rgba(12,8,35,.55);--bg-input:rgba(8,6,24,.7);--border-subtle:rgba(120,100,200,.08);--border-hover:rgba(120,100,200,.15);--border-input:rgba(120,100,200,.1);--border-active:rgba(139,92,246,.45);--text-primary:#cdc8e4;--text-secondary:#908ca8;--text-muted:#706c8a;--text-dim:#5a5480;--text-faint:#4a4660;--accent:#7c3aed;--accent-light:#c4b5fd;--accent-glow:rgba(139,92,246,.12);--accent-deep:#5b21b6;--font-sans:'Noto Sans TC',-apple-system,BlinkMacSystemFont,sans-serif;--font-serif:'Noto Serif TC','Playfair Display',serif;--font-mono:'SF Mono','Fira Code','Cascadia Code',monospace;--radius-md:12px;--radius-lg:20px}
+html{scroll-behavior:smooth}
+body{min-height:100vh;background:linear-gradient(165deg,var(--bg-deep) 0%,#0c0826 25%,#110a30 50%,#0d0820 75%,var(--bg-deep) 100%);color:var(--text-primary);font-family:var(--font-sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(139,92,246,.2);border-radius:3px}
+@keyframes floatOrb{0%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-50%) scale(1.25) translateY(-20px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes breathe{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.1)}50%{box-shadow:0 0 50px rgba(124,58,237,.2)}}
+@keyframes spinSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.animate-slide{animation:slideUp .7s ease-out both}
+.delay-1{animation-delay:.05s}.delay-2{animation-delay:.1s}.delay-3{animation-delay:.15s}.delay-4{animation-delay:.2s}.delay-5{animation-delay:.25s}
+.animate-fade{animation:fadeIn .4s ease-out}
+#star-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.orbs-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
+.main-wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 18px 60px}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;z-index:10;background:rgba(6,6,15,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-bottom:8px}
+.topnav-brand{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none}
+.topnav-brand span:last-child{font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--accent-light);letter-spacing:2px}
+.topnav-links{display:flex;gap:4px}
+.nav-btn{padding:8px 16px;border:none;border-radius:8px;background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:var(--font-sans);transition:all .2s;position:relative}
+.nav-btn:hover{color:#b8b4d0}.nav-btn.active{color:var(--accent-light)}
+.nav-btn.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:16px;height:2px;background:var(--accent);border-radius:1px}
+.gp{background:var(--bg-panel);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);transition:border-color .3s}
+.gp:hover{border-color:var(--border-hover)}
+.inp{width:100%;background:var(--bg-input);border:1px solid var(--border-input);border-radius:var(--radius-md);color:var(--text-primary);font-size:14.5px;padding:14px 16px;outline:none;font-family:var(--font-sans);transition:border-color .3s,box-shadow .3s}
+.inp:focus{border-color:var(--border-active);box-shadow:0 0 24px rgba(139,92,246,.08)}
+.inp::placeholder{color:rgba(150,140,180,.35)}
+textarea.inp{min-height:150px;resize:vertical;line-height:1.85}
+.sel{background:var(--bg-input);border:1px solid var(--border-input);border-radius:10px;color:var(--text-primary);font-size:13.5px;padding:10px 14px;outline:none;font-family:var(--font-sans);cursor:pointer}
+.sel option{background:#110a30;color:var(--text-primary)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:28px;font-size:13px;cursor:pointer;transition:all .2s;border:1px solid var(--border-input);background:rgba(8,6,24,.5);color:var(--text-secondary);user-select:none}
+.chip:hover{border-color:rgba(139,92,246,.3);color:#b8b4d0}
+.chip.active{border-color:rgba(139,92,246,.5);background:var(--accent-glow);color:var(--accent-light)}
+.style-card{border-radius:var(--radius-md);cursor:pointer;transition:all .2s ease;border:1px solid rgba(120,100,200,.06);background:rgba(8,6,24,.4);user-select:none;position:relative;overflow:hidden;padding:12px 14px;text-align:left}
+.style-card:hover{border-color:rgba(139,92,246,.25);transform:translateY(-1px)}
+.style-card.active{border-color:var(--border-active);background:rgba(139,92,246,.1)}
+.style-card.active::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.5),transparent)}
+.style-card .s-head{display:flex;align-items:center;gap:8px}
+.style-card .s-icon{font-size:20px;flex-shrink:0}
+.style-card .s-label{font-size:13px;color:var(--text-muted);font-weight:400;transition:color .2s;flex:1;min-width:0}
+.style-card.active .s-label{font-weight:600}
+.style-card .s-toggle{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:11px;padding:2px 4px;flex-shrink:0;opacity:.6;transition:opacity .2s}
+.style-card .s-toggle:hover{opacity:1}
+.style-card .s-desc{font-size:11.5px;color:#8a85a8;line-height:1.65;margin-top:8px;padding-top:8px;border-top:1px solid rgba(120,100,200,.08);display:none}
+.style-card .s-desc.open{display:block}
+.styles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.btn-primary{width:100%;padding:17px 32px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:all .3s;color:white;letter-spacing:1.5px;background:linear-gradient(135deg,var(--accent-deep),var(--accent),#8b5cf6);box-shadow:0 4px 30px rgba(91,33,182,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 40px rgba(91,33,182,.45)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-ghost{padding:9px 18px;border:1px solid rgba(120,100,200,.12);border-radius:10px;background:transparent;color:#8a85a8;font-size:13.5px;cursor:pointer;font-family:var(--font-sans);transition:all .2s}
+.btn-ghost:hover{color:var(--accent-light);border-color:rgba(139,92,246,.3)}
+.btn-ghost.active{background:var(--accent-glow);border-color:rgba(139,92,246,.35);color:var(--accent-light)}
+.btn-text{background:none;border:none;color:var(--accent);font-size:12.5px;cursor:pointer;opacity:.7;font-family:var(--font-sans)}
+.btn-text:hover{opacity:1}
+.overview-card{background:linear-gradient(135deg,rgba(139,92,246,.08) 0%,rgba(99,102,241,.06) 100%);border:1px solid rgba(139,92,246,.18);border-radius:16px;padding:22px 24px;margin-bottom:20px;position:relative;overflow:hidden}
+.overview-card .glow{position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.12) 0%,transparent 70%);pointer-events:none}
+.overview-card .ov-title{font-family:var(--font-serif);font-size:15px;font-weight:700;color:var(--accent-light);margin-bottom:10px;letter-spacing:.5px}
+.overview-card .ov-body{font-size:14px;line-height:1.85;color:#d4d0e8}
+.result-md{line-height:1.85;font-size:14.5px}
+.result-md h3{font-size:1.15rem;font-weight:700;margin-top:30px;margin-bottom:12px;color:var(--accent-light);font-family:var(--font-serif);letter-spacing:1px;padding-bottom:8px;border-bottom:1px solid rgba(139,92,246,.12)}
+.result-md h4{font-size:1rem;font-weight:600;margin-top:20px;margin-bottom:8px;color:#a5b4fc}
+.result-md p{margin-bottom:10px;line-height:1.85}
+.result-md ul,.result-md ol{padding-left:20px;margin-bottom:10px}
+.result-md li{margin-bottom:6px;line-height:1.75}.result-md li::marker{color:var(--accent)}
+.result-md strong{color:#e0d4ff;font-weight:600}
+.result-md blockquote{border-left:3px solid rgba(139,92,246,.4);padding-left:16px;margin:12px 4px;color:#b4aed0;font-style:italic}
+.result-md hr{border:none;border-top:1px solid rgba(139,92,246,.1);margin:16px 0}
+.result-md code{background:rgba(139,92,246,.08);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:13px;color:var(--accent-light)}
+.loading-spinner{display:inline-block;animation:spinSlow 8s linear infinite}
+.loading-bar{width:160px;height:2px;margin:0 auto;border-radius:1px;overflow:hidden;background:rgba(60,40,120,.15)}
+.loading-bar-inner{width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:200% 100%;animation:shimmer 1.5s linear infinite}
+.history-card{padding:16px 18px;border-radius:14px;cursor:pointer;border:1px solid rgba(120,100,200,.06);background:rgba(8,6,24,.4);transition:all .2s}
+.history-card:hover{border-color:rgba(139,92,246,.2);background:rgba(15,10,40,.5)}
+.selected-preview{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px}
+.selected-preview .sp-icon{font-size:22px;flex-shrink:0}
+.selected-preview .sp-label{font-size:13px;font-weight:600;margin-bottom:4px}
+.selected-preview .sp-desc{font-size:12px;color:#8a85a8;line-height:1.6}
+.flex{display:flex}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-4{gap:4px}.gap-6{gap:6px}.gap-7{gap:7px}.gap-8{gap:8px}.gap-10{gap:10px}
+.mb-12{margin-bottom:12px}.mb-14{margin-bottom:14px}.mb-16{margin-bottom:16px}.mb-18{margin-bottom:18px}.mb-20{margin-bottom:20px}.mb-22{margin-bottom:22px}
+.text-center{text-align:center}.hidden{display:none!important}
+.label{font-size:13px;color:var(--text-muted);margin-bottom:8px;display:block}.sublabel{font-size:11px;color:var(--text-faint)}
+.code-block{background:var(--bg-input);border:1px solid rgba(120,100,200,.12);border-radius:14px;padding:20px;font-family:var(--font-mono);font-size:13.5px;line-height:1.85;color:var(--accent-light);word-break:break-word}
+.error-panel{border-color:rgba(239,68,68,.2)!important;background:rgba(35,10,15,.5)!important}
+@media(max-width:600px){.topnav-brand span:last-child{font-size:14px;letter-spacing:1px}.nav-btn{padding:6px 10px;font-size:12px}.styles-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
+</style>
+</head>
+<body>
+
+<canvas id="star-canvas"></canvas>
+<div class="orbs-container">
+  <div class="orb" style="width:220px;height:220px;background:radial-gradient(circle,rgba(90,50,170,.08) 0%,transparent 70%);left:15%;top:25%;animation:floatOrb 14s ease-in-out infinite alternate"></div>
+  <div class="orb" style="width:320px;height:320px;background:radial-gradient(circle,rgba(40,70,160,.06) 0%,transparent 70%);left:65%;top:55%;animation:floatOrb 19s ease-in-out infinite alternate"></div>
+  <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,rgba(130,40,110,.05) 0%,transparent 70%);left:35%;top:75%;animation:floatOrb 24s ease-in-out infinite alternate"></div>
+  <div class="orb" style="width:520px;height:520px;background:radial-gradient(circle,rgba(50,110,170,.06) 0%,transparent 70%);left:75%;top:15%;animation:floatOrb 29s ease-in-out infinite alternate"></div>
+</div>
+
+<div class="main-wrap">
+  <nav class="topnav">
+    <a class="topnav-brand" onclick="showPage('input')"><span style="font-size:22px">🌌</span><span>潛意識畫布</span></a>
+    <div class="topnav-links">
+      <button class="nav-btn active" id="nav-input" onclick="showPage('input')">✏️ 輸入</button>
+      <button class="nav-btn hidden" id="nav-result" onclick="showPage('result')">📜 報告</button>
+      <button class="nav-btn" id="nav-history" onclick="showPage('history')">📚 紀錄 <span id="history-count" style="font-size:11px;color:#7c3aed;margin-left:2px"></span></button>
+    </div>
+  </nav>
+
+  <!-- PAGE: INPUT -->
+  <div id="page-input" class="animate-fade">
+    <div class="text-center animate-slide" style="padding:36px 0 32px">
+      <div style="font-size:44px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(139,92,246,.3))">🌌</div>
+      <h1 style="font-family:var(--font-serif);font-size:clamp(1.6rem,4.5vw,2.2rem);font-weight:700;background:linear-gradient(135deg,#ddd6fe 0%,#a78bfa 40%,#c4b5fd 70%,#e9d5ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;letter-spacing:3px;line-height:1.3">專屬夢境深度解析</h1>
+      <p style="color:var(--text-dim);font-size:14px;font-weight:300;letter-spacing:.5px;line-height:1.6;max-width:460px;margin:0 auto">寫下你的夢境，AI 將結合榮格心理學、佛洛伊德理論<br>與認知神經科學，為你解讀潛意識的密語</p>
+    </div>
+
+    <div class="gp animate-slide delay-1" style="padding:20px 22px;margin-bottom:16px">
+      <div class="flex items-center justify-between flex-wrap gap-8 mb-12">
+        <span class="label" style="margin:0">🔑 Gemini API Key</span>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:12px;color:var(--accent);text-decoration:none;opacity:.7">免費取得 →</a>
+      </div>
+      <div class="flex gap-10 flex-wrap">
+        <div style="flex:1;min-width:200px;position:relative">
+          <input class="inp" type="password" id="api-key" placeholder="貼上你的 Gemini API Key..." style="padding-right:42px">
+          <button onclick="toggleApiKey()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px" id="eye-btn">👁️</button>
+        </div>
+        <select class="sel" id="model-select" style="min-width:168px">
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash (最快速)</option>
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash (穩定版)</option>
+          <option value="gemini-2.5-pro">Gemini 2.5 Pro (最精確)</option>
+          <option value="gemini-1.5-pro">Gemini 1.5 Pro (經典版)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="gp animate-slide delay-2" style="padding:24px 22px;margin-bottom:16px">
+      <div class="flex items-center justify-between mb-12">
+        <span style="font-size:14px;font-weight:600;color:#b8b4d0">💭 描述你的夢境</span>
+        <span class="sublabel" id="char-count">0 字</span>
+      </div>
+      <textarea class="inp" id="dream-text" placeholder="閉上眼睛，回想昨晚的夢境...&#10;&#10;場景是什麼樣的？出現了哪些人物？發生了什麼事件？&#10;你在夢中有什麼感受？越詳細，解析越深入。" oninput="updateCharCount()"></textarea>
+    </div>
+
+    <div class="gp animate-slide delay-3" style="padding:24px 22px;margin-bottom:16px">
+      <span class="label">🏷️ 夢境類型 <span class="sublabel">（可選）</span></span>
+      <div class="flex flex-wrap gap-7 mb-20" id="dream-types"></div>
+      <span class="label">😶‍🌫️ 夢中的情緒 <span class="sublabel">（最多 4 個）</span></span>
+      <div class="flex flex-wrap gap-7" id="mood-chips"></div>
+    </div>
+
+    <div class="gp animate-slide delay-4" style="padding:24px 22px;margin-bottom:20px">
+      <div class="flex items-center justify-between flex-wrap gap-8" style="margin-bottom:6px">
+        <span class="label" style="margin:0">🎨 夢境視覺風格 <span class="sublabel">（影響繪圖指令）</span></span>
+        <input class="inp" type="text" id="style-search" placeholder="搜尋風格..." oninput="filterStyles()" style="width:140px;padding:7px 12px;font-size:12.5px">
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.5">點擊 ▼ 查看每種風格的詳細介紹，選擇最能表達你夢境氛圍的風格</p>
+      <div id="selected-style-preview"></div>
+      <div class="styles-grid" id="styles-grid"></div>
+      <div class="text-center" style="margin-top:12px">
+        <button class="btn-text" id="toggle-styles-btn" onclick="toggleAllStyles()">展開全部 16 種風格 ▾</button>
+      </div>
+    </div>
+
+    <div class="animate-slide delay-5">
+      <button class="btn-primary" id="analyze-btn" onclick="analyzeDream()" disabled>✨ 開始深度解析夢境</button>
+      <p class="text-center hidden" id="api-hint" style="margin-top:10px;font-size:12px;color:var(--accent);opacity:.7">請先輸入 Gemini API Key 才能解析</p>
+    </div>
+
+    <div class="gp error-panel hidden" id="error-panel" style="padding:16px 20px;margin-top:16px;animation:slideUp .4s ease-out">
+      <div style="font-size:14px;color:#fca5a5;margin-bottom:4px" id="error-text"></div>
+      <div style="font-size:12px;color:#6b5050">常見原因：API Key 無效、額度用盡、所選模型不可用。</div>
+    </div>
+
+    <div class="gp hidden" id="loading-panel" style="padding:44px 24px;margin-top:16px;text-align:center;animation:breathe 3s ease-in-out infinite">
+      <div style="font-size:44px;margin-bottom:14px"><span class="loading-spinner">🔮</span></div>
+      <div style="font-size:14.5px;color:#a5b4fc;font-weight:500;margin-bottom:6px" id="loading-msg"></div>
+      <div style="font-size:12px;color:var(--text-faint);margin-bottom:14px" id="loading-model"></div>
+      <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+    </div>
+  </div>
+
+  <!-- PAGE: RESULT -->
+  <div id="page-result" class="hidden animate-fade" style="padding-top:16px">
+    <div id="overview-card-container"></div>
+
+    <div class="gp" style="padding:26px 24px;margin-bottom:16px">
+      <div class="flex items-center justify-between flex-wrap gap-10 mb-18">
+        <div class="flex items-center gap-10">
+          <span style="font-size:22px">📜</span>
+          <span style="font-family:var(--font-serif);font-size:17px;font-weight:700;color:var(--accent-light);letter-spacing:1px">詳細解析報告</span>
+        </div>
+        <div class="flex gap-4 items-center" id="result-tags"></div>
+      </div>
+      <div class="flex gap-6 flex-wrap mb-22">
+        <button class="btn-ghost active" id="tab-analysis" onclick="switchTab('analysis')">🧠 完整解析</button>
+        <button class="btn-ghost" id="tab-prompt" onclick="switchTab('prompt')">🎨 繪圖指令</button>
+        <button class="btn-ghost" id="tab-raw" onclick="switchTab('raw')">📝 原始文字</button>
+      </div>
+      <div id="content-analysis" class="result-md animate-fade"></div>
+      <div id="content-prompt" class="hidden animate-fade">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.6" id="prompt-desc"></p>
+        <div class="code-block" id="prompt-text"></div>
+        <div style="margin-top:14px"><button class="btn-ghost" onclick="copyPrompt()" style="font-size:13px" id="copy-prompt-btn">📋 複製指令</button></div>
+      </div>
+      <div id="content-raw" class="hidden animate-fade">
+        <div class="code-block" id="raw-text" style="font-family:var(--font-sans);color:var(--text-secondary);max-height:500px;overflow-y:auto;white-space:pre-wrap"></div>
+        <div style="margin-top:14px"><button class="btn-ghost" onclick="copyRaw()" style="font-size:13px" id="copy-raw-btn">📋 複製全文</button></div>
+      </div>
+    </div>
+    <div class="flex gap-10 flex-wrap mb-16">
+      <button class="btn-ghost" onclick="showPage('input')" style="flex:1;text-align:center">✏️ 解析新夢境</button>
+      <button class="btn-ghost" onclick="copyRaw()" style="flex:1;text-align:center">📋 複製報告</button>
+    </div>
+    <div class="gp" style="padding:16px 20px;opacity:.6">
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.7">💡 夢境解析是心理探索工具，非醫療診斷。如持續受夢境困擾，建議尋求專業心理諮商師協助。每一個夢，都是潛意識寫給你的一封信。</div>
+    </div>
+  </div>
+
+  <!-- PAGE: HISTORY -->
+  <div id="page-history" class="hidden animate-fade" style="padding-top:16px">
+    <div class="flex items-center justify-between mb-20">
+      <h2 style="font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--accent-light)">📚 夢境紀錄</h2>
+      <button class="btn-ghost hidden" id="clear-history-btn" onclick="clearHistory()" style="font-size:12px">🗑️ 清除全部</button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+
+  <div class="text-center" style="margin-top:48px;font-size:11.5px;color:#2a2550;letter-spacing:.5px;line-height:1.8">潛意識畫布 Subconscious Canvas<br>Powered by Gemini AI · 基於榮格分析心理學</div>
+</div>
+
+<script>
+const STATE = { dreamType:'none', selectedMoods:[], visualStyle:'surrealism', showAllStyles:false, result:null, history:[], expandedStyleId:null };
+
+const VISUAL_STYLES = [
+  {id:"surrealism",label:"超現實主義",en:"Surrealism, Salvador Dalí-inspired melting dreamscape",icon:"🌀",color:"#c084fc",desc:"融化的時鐘、扭曲的空間、不合邏輯的物件組合。達利式的夢幻畫風，最適合表現荒誕離奇的夢境。"},
+  {id:"cyberpunk",label:"賽博龐克",en:"Cyberpunk neon noir, rain-soaked dystopian cityscape",icon:"🌃",color:"#22d3ee",desc:"霓虹燈光、雨中城市、科技感廢墟。充滿未來感的黑暗都市風格，適合緊張、壓迫感的夢境。"},
+  {id:"ghibli",label:"吉卜力風",en:"Studio Ghibli anime watercolor, soft pastoral fantasy",icon:"🍃",color:"#86efac",desc:"宮崎駿動畫般的水彩田園世界，溫暖柔和的光線與色調。適合懷舊、溫馨或帶有奇幻元素的夢境。"},
+  {id:"impressionism",label:"莫內印象派",en:"Monet Impressionism, dappled light and water reflections",icon:"🎨",color:"#fbbf24",desc:"斑駁光影、朦朧色彩、水面倒影。莫內式的柔和筆觸，適合模糊記憶、情感流動類的夢境。"},
+  {id:"darkfantasy",label:"暗黑奇幻",en:"Dark fantasy gothic, Beksinski-inspired organic horror",icon:"🖤",color:"#a1a1aa",desc:"哥德式建築、骨骼般的有機結構、陰鬱色調。Beksinski 風格的超現實恐怖，適合惡夢或帶有恐懼感的夢境。"},
+  {id:"ethereal",label:"空靈夢幻",en:"Ethereal dreamcore pastel, floating celestial softness",icon:"✨",color:"#e9d5ff",desc:"飄浮的物件、柔軟的粉彩色調、天使般的光暈。最夢幻的風格，適合寧靜、飛翔或靈性體驗的夢境。"},
+  {id:"ukiyoe",label:"浮世繪",en:"Japanese Ukiyo-e woodblock print, Hokusai wave style",icon:"🌊",color:"#6ee7b7",desc:"日本傳統木版畫風格，平面化構圖與粗獷線條。北齋《神奈川沖浪裏》般的力量感，適合與自然力量相關的夢境。"},
+  {id:"artnouveau",label:"新藝術風格",en:"Art Nouveau, Alphonse Mucha ornamental flowing lines",icon:"🌺",color:"#f9a8d4",desc:"優雅的花草曲線、裝飾性邊框、女性化的柔美線條。慕夏海報般的華麗，適合浪漫或帶有女性意象的夢境。"},
+  {id:"vaporwave",label:"蒸氣波",en:"Vaporwave aesthetic, pink-purple retro digital glitch",icon:"🌴",color:"#f472b6",desc:"粉紫色調、復古電子風、希臘雕像與棕櫚樹混搭。帶有數位故障效果，適合懷舊感或超現實的都市夢境。"},
+  {id:"oilpainting",label:"古典油畫",en:"Classical oil painting, Caravaggio dramatic chiaroscuro",icon:"🖼️",color:"#d97706",desc:"卡拉瓦喬式的戲劇性明暗對比，厚重的油彩質感與古典構圖。適合莊嚴、宗教性或帶有強烈情感衝突的夢境。"},
+  {id:"watercolor",label:"水彩畫",en:"Delicate watercolor wash, wet-on-wet bleeding pigments",icon:"💧",color:"#67e8f9",desc:"濕潤的顏料暈染、透明的色彩層次、留白的呼吸感。像記憶般逐漸暈開，適合模糊、流動或情緒柔軟的夢境。"},
+  {id:"pixelart",label:"像素藝術",en:"Retro pixel art, 16-bit SNES style fantasy scene",icon:"👾",color:"#a78bfa",desc:"復古遊戲機風格的方塊像素，16-bit 的鮮豔配色。帶有童年遊戲記憶的風格，適合冒險、遊戲感或童年回憶的夢境。"},
+  {id:"inkwash",label:"水墨風",en:"Chinese ink wash painting, misty mountain shanshui landscape",icon:"🏔️",color:"#94a3b8",desc:"中國傳統水墨山水，留白與墨色的禪意對話。雲霧繚繞的空靈感，適合與自然、寧靜或哲學思考相關的夢境。"},
+  {id:"psychedelic",label:"迷幻藝術",en:"60s psychedelic art, kaleidoscopic fractal patterns",icon:"🍄",color:"#fb923c",desc:"60 年代的萬花筒圖案、螺旋碎形、飽和的彩虹色彩。視覺高度扭曲，適合感官強烈、迷幻或混沌的夢境體驗。"},
+  {id:"steampunk",label:"蒸汽龐克",en:"Steampunk Victorian, brass gears and airships",icon:"⚙️",color:"#b45309",desc:"維多利亞時代的黃銅齒輪、蒸汽管線與飛行船。復古科技的奇幻感，適合機械、時間旅行或工業感的夢境。"},
+  {id:"minimalist",label:"極簡主義",en:"Minimalist abstract, geometric shapes and negative space",icon:"◻️",color:"#e2e8f0",desc:"簡潔的幾何形狀、大面積留白、極少的色彩。用最少的元素傳達最深的意境，適合抽象、空曠或概念性的夢境。"},
+];
+const MOODS=[{id:"peaceful",label:"平靜",icon:"😌"},{id:"anxious",label:"焦慮",icon:"😰"},{id:"excited",label:"興奮",icon:"🤩"},{id:"scared",label:"恐懼",icon:"😨"},{id:"confused",label:"困惑",icon:"😵‍💫"},{id:"sad",label:"悲傷",icon:"😢"},{id:"happy",label:"快樂",icon:"😊"},{id:"nostalgic",label:"懷舊",icon:"🥹"},{id:"angry",label:"憤怒",icon:"😤"},{id:"lonely",label:"孤獨",icon:"🥀"},{id:"awe",label:"敬畏",icon:"😲"},{id:"guilty",label:"愧疚",icon:"😔"}];
+const DREAM_TYPES=[{id:"none",label:"不確定",icon:"❓"},{id:"lucid",label:"清醒夢",icon:"🔆"},{id:"recurring",label:"反覆夢",icon:"🔁"},{id:"nightmare",label:"惡夢",icon:"👹"},{id:"prophetic",label:"預知夢",icon:"🔮"},{id:"flying",label:"飛行夢",icon:"🕊️"},{id:"falling",label:"墜落夢",icon:"🌀"},{id:"chasing",label:"追逐夢",icon:"🏃"}];
+const LOADING_MESSAGES=["🌙 潛入夢境的深海...","🔮 辨識潛意識的象徵符號...","🧠 對照榮格原型資料庫...","🌊 梳理夢境敘事結構...","✨ 凝聚你的專屬解析報告...","🎨 調配夢境的視覺色彩..."];
+let loadingInterval=null,loadingPhase=0;
+
+// Star field
+(function(){const c=document.getElementById('star-canvas'),x=c.getContext('2d');let s=[];function r(){c.width=c.offsetWidth*2;c.height=c.offsetHeight*2;s=Array.from({length:140},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.6+.2,sp:Math.random()*.4+.05,ph:Math.random()*Math.PI*2}))}r();window.addEventListener('resize',r);function d(t){x.clearRect(0,0,c.width,c.height);for(const p of s){const f=.4+.6*Math.sin(t*.0008*p.sp*3+p.ph);x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(200,195,255,${f*.55})`;x.fill()}requestAnimationFrame(d)}requestAnimationFrame(d)})();
+
+function init(){renderDreamTypes();renderMoods();renderStyles();renderSelectedPreview();updateAnalyzeBtn();document.getElementById('api-key').addEventListener('input',updateAnalyzeBtn);document.getElementById('dream-text').addEventListener('input',updateAnalyzeBtn);try{const s=localStorage.getItem('dream-canvas-history');if(s){STATE.history=JSON.parse(s);updateHistoryCount()}}catch(e){}}
+
+function renderDreamTypes(){document.getElementById('dream-types').innerHTML=DREAM_TYPES.map(t=>`<div class="chip ${STATE.dreamType===t.id?'active':''}" onclick="selectDreamType('${t.id}')"><span>${t.icon}</span><span>${t.label}</span></div>`).join('')}
+function renderMoods(){document.getElementById('mood-chips').innerHTML=MOODS.map(m=>`<div class="chip ${STATE.selectedMoods.includes(m.id)?'active':''}" onclick="toggleMood('${m.id}')"><span>${m.icon}</span><span>${m.label}</span></div>`).join('')}
+
+function renderSelectedPreview(){
+  const s=VISUAL_STYLES.find(v=>v.id===STATE.visualStyle);
+  if(!s){document.getElementById('selected-style-preview').innerHTML='';return}
+  document.getElementById('selected-style-preview').innerHTML=`<div class="selected-preview"><span class="sp-icon">${s.icon}</span><div><div class="sp-label" style="color:${s.color}">已選擇：${s.label}</div><div class="sp-desc">${s.desc}</div></div></div>`;
+}
+
+function renderStyles(){
+  const grid=document.getElementById('styles-grid');
+  const search=document.getElementById('style-search').value.toLowerCase();
+  const filtered=VISUAL_STYLES.filter(s=>s.label.includes(search)||s.en.toLowerCase().includes(search)||s.id.includes(search)||s.desc.includes(search));
+  const displayed=STATE.showAllStyles?filtered:filtered.slice(0,8);
+  grid.innerHTML=displayed.map(s=>{
+    const act=STATE.visualStyle===s.id;
+    const exp=STATE.expandedStyleId===s.id;
+    return `<div class="style-card ${act?'active':''}" onclick="selectStyle('${s.id}')">
+      <div class="s-head">
+        <span class="s-icon">${s.icon}</span>
+        <span class="s-label" style="color:${act?s.color:'var(--text-muted)'}">${s.label}</span>
+        <button class="s-toggle" onclick="event.stopPropagation();toggleStyleDesc('${s.id}')" title="查看風格介紹">${exp?'▲':'▼'}</button>
+      </div>
+      <div class="s-desc ${exp?'open':''}">${s.desc}</div>
+    </div>`;
+  }).join('');
+  const btn=document.getElementById('toggle-styles-btn');
+  if(filtered.length<=8){btn.classList.add('hidden')}else{btn.classList.remove('hidden');btn.textContent=STATE.showAllStyles?'收合 ▴':`展開全部 ${filtered.length} 種風格 ▾`}
+}
+
+function selectDreamType(id){STATE.dreamType=id;renderDreamTypes()}
+function toggleMood(id){const i=STATE.selectedMoods.indexOf(id);if(i>-1)STATE.selectedMoods.splice(i,1);else if(STATE.selectedMoods.length<4)STATE.selectedMoods.push(id);renderMoods()}
+function selectStyle(id){STATE.visualStyle=id;renderStyles();renderSelectedPreview()}
+function toggleStyleDesc(id){STATE.expandedStyleId=STATE.expandedStyleId===id?null:id;renderStyles()}
+function filterStyles(){renderStyles()}
+function toggleAllStyles(){STATE.showAllStyles=!STATE.showAllStyles;renderStyles()}
+function toggleApiKey(){const i=document.getElementById('api-key'),b=document.getElementById('eye-btn');if(i.type==='password'){i.type='text';b.textContent='🙈'}else{i.type='password';b.textContent='👁️'}}
+function updateCharCount(){document.getElementById('char-count').textContent=document.getElementById('dream-text').value.length+' 字';updateAnalyzeBtn()}
+function updateAnalyzeBtn(){const a=document.getElementById('api-key').value.trim(),d=document.getElementById('dream-text').value.trim();document.getElementById('analyze-btn').disabled=!a||!d;document.getElementById('api-hint').classList.toggle('hidden',!(!a&&d))}
+function showPage(p){STATE.currentPage=p;document.getElementById('page-input').classList.toggle('hidden',p!=='input');document.getElementById('page-result').classList.toggle('hidden',p!=='result');document.getElementById('page-history').classList.toggle('hidden',p!=='history');document.getElementById('nav-input').classList.toggle('active',p==='input');document.getElementById('nav-result').classList.toggle('active',p==='result');document.getElementById('nav-history').classList.toggle('active',p==='history');if(p==='history')renderHistory();window.scrollTo({top:0,behavior:'smooth'})}
+function switchTab(t){['analysis','prompt','raw'].forEach(x=>{document.getElementById('tab-'+x).classList.toggle('active',x===t);document.getElementById('content-'+x).classList.toggle('hidden',x!==t)})}
+
+async function analyzeDream(){
+  const apiKey=document.getElementById('api-key').value.trim(),dreamText=document.getElementById('dream-text').value.trim(),model=document.getElementById('model-select').value;
+  if(!apiKey||!dreamText)return;
+  document.getElementById('error-panel').classList.add('hidden');document.getElementById('loading-panel').classList.remove('hidden');document.getElementById('analyze-btn').disabled=true;
+  loadingPhase=0;document.getElementById('loading-msg').textContent=LOADING_MESSAGES[0];document.getElementById('analyze-btn').textContent=LOADING_MESSAGES[0];
+  document.getElementById('loading-model').textContent='使用 '+document.getElementById('model-select').selectedOptions[0].text.split('(')[0].trim()+' 分析中';
+  loadingInterval=setInterval(()=>{loadingPhase=(loadingPhase+1)%LOADING_MESSAGES.length;document.getElementById('loading-msg').textContent=LOADING_MESSAGES[loadingPhase];document.getElementById('analyze-btn').textContent=LOADING_MESSAGES[loadingPhase]},2400);
+  const styleObj=VISUAL_STYLES.find(s=>s.id===STATE.visualStyle);
+  const moodLabels=STATE.selectedMoods.map(id=>MOODS.find(m=>m.id===id)?.label).filter(Boolean).join('、');
+  const dreamTypeLabel=DREAM_TYPES.find(t=>t.id===STATE.dreamType)?.label||'';
+  try{
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:buildPrompt(dreamText,styleObj,moodLabels,dreamTypeLabel)}]}],generationConfig:{temperature:.82,topP:.92,topK:40,maxOutputTokens:8192}})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'API 錯誤 ('+res.status+')')}
+    const data=await res.json();const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if(!text)throw new Error('未收到有效回應。請確認 API Key 及所選模型是否正確。');
+    STATE.result=text;
+    const entry={id:Date.now(),date:new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}),dreamSnippet:dreamText.slice(0,60)+(dreamText.length>60?'...':''),moods:[...STATE.selectedMoods],style:STATE.visualStyle,type:STATE.dreamType,result:text};
+    STATE.history.unshift(entry);if(STATE.history.length>20)STATE.history=STATE.history.slice(0,20);
+    try{localStorage.setItem('dream-canvas-history',JSON.stringify(STATE.history))}catch(e){}
+    updateHistoryCount();renderResult(text);document.getElementById('nav-result').classList.remove('hidden');showPage('result');
+  }catch(e){document.getElementById('error-text').textContent='❌ '+e.message;document.getElementById('error-panel').classList.remove('hidden')}
+  finally{clearInterval(loadingInterval);document.getElementById('loading-panel').classList.add('hidden');document.getElementById('analyze-btn').disabled=false;document.getElementById('analyze-btn').textContent='✨ 開始深度解析夢境';updateAnalyzeBtn()}
+}
+
+function buildPrompt(dreamText,styleObj,moodLabels,dreamTypeLabel){
+  return `你是一位世界頂級的心理學家與夢境分析師，同時也是一位擅長文學表達的作家。你精通以下學派：
+- 榮格（Carl Jung）分析心理學：原型（Archetype）、集體潛意識、陰影（Shadow）、阿尼瑪/阿尼姆斯（Anima/Animus）、自性（Self）
+- 佛洛伊德（Sigmund Freud）精神分析：願望滿足理論、壓抑與象徵
+- 現代認知神經科學：記憶整合理論、情緒調節假說
+- 完形治療（Gestalt）夢工作技術
+
+你的語調溫柔、深刻、富有詩意，像一位智慧的老友在月光下與你對談。
+
+═══ 夢境資料 ═══
+【夢境內容】
+「${dreamText}」
+
+${STATE.dreamType!=='none'?'【夢境類型】'+dreamTypeLabel:''}
+${moodLabels?'【夢中情緒】'+moodLabels:''}
+【視覺風格偏好】${styleObj?.label||'超現實主義'}
+
+═══ 輸出格式（繁體中文 Markdown） ═══
+
+**重要：請嚴格依照以下順序與格式輸出每一個段落。第一個段落「夢境大綱」是最重要的，請務必優先輸出。**
+
+### 📋 夢境大綱
+用 3-4 句話精煉地概述這個夢境的**核心主題**、**關鍵情緒**與**最可能的心理意義**。這段話要讓讀者一眼就掌握整個夢境在說什麼，像是一份報告的「執行摘要」。不需要細節，只需要最本質的洞見。（60-100 字）
+
+### 🌊 情緒共鳴與接納
+用一段充滿溫暖與理解的話，精準描述做夢者在夢中可能經歷的情緒旅程。不要只是說「我理解你的感受」，而是要具體描繪那種情緒的質地。讓做夢者感覺「你真的看見了我」。（100-150 字）
+
+### 🔮 夢境符號深度解碼
+從夢境中挑出 3-5 個最關鍵的符號或意象，每一個符號請以下列結構分析：
+- **符號名稱**
+- 榮格原型對應：這個符號在集體潛意識中代表什麼原型？
+- 跨文化象徵：在東方與西方文化中，這個符號各有什麼意義？
+- 個人潛意識映射：結合夢境上下文，這個符號對做夢者個人可能意味什麼？
+（每個符號 80-120 字）
+
+### 🧩 夢境敘事結構解析
+將整個夢境視為一個「故事」，分析其：
+- **起始情境**：夢的開場建立了什麼心理基調？
+- **關鍵轉折**：哪個時刻夢境發生了質的變化？這代表什麼內在衝突？
+- **高潮與張力**：夢境最強烈的時刻反映了什麼核心議題？
+- **結局暗示**：夢是如何結束的（或被中斷的）？這暗示了什麼心理狀態？
+（150-200 字）
+
+${STATE.dreamType!=='none'?`### 🔄 ${dreamTypeLabel}特殊分析
+針對「${dreamTypeLabel}」這種夢境類型的特有心理學意義進行額外分析。（80-120 字）`:''}
+
+### 🪞 陰影與自我對話
+從榮格「陰影」(Shadow) 的角度，分析夢境中可能浮現的、做夢者不願正視或被壓抑的自我面向。（80-120 字）
+
+### 💡 現實映照與成長行動
+提供 3 條具體、可操作的建議：
+1. **心理層面**：自我覺察或情緒處理的具體練習
+2. **行動層面**：日常生活中可實踐的具體行為
+3. **關係層面**：人際互動或自我關係的洞察
+（每條 50-80 字）
+
+### 🎨 夢境視覺化指令 (Image Prompt)
+以英文撰寫 60-100 字的 AI 繪圖 prompt。風格：${styleObj?.en||'Surrealism'}。要求具體描述構圖、光影、色彩、氛圍。直接輸出英文 prompt。
+
+請確保整份報告文字優美、有深度、有洞見。`}
+
+function extractOverview(text){
+  const m=text.match(/###\s*📋\s*夢境大綱[\s\S]*?\n([\s\S]*?)(?=\n###\s|$)/);
+  if(m)return m[1].trim();
+  const m2=text.match(/###\s*.*(?:大綱|Overview|總覽|摘要).*\n([\s\S]*?)(?=\n###\s|$)/i);
+  if(m2)return m2[1].trim();
+  return null;
+}
+function extractDetailContent(text){
+  const ov=extractOverview(text);
+  if(!ov)return text;
+  return text.replace(/###\s*📋\s*夢境大綱[\s\S]*?\n[\s\S]*?(?=\n###\s)/,'').trim()||text;
+}
+function extractImagePrompt(text){
+  const m1=text.match(/Image Prompt\)?[:\s]*\n([\s\S]*?)(?=\n###|$)/i);
+  if(m1)return m1[1].trim().replace(/^[`"'\s]+|[`"'\s]+$/g,'').replace(/```/g,'');
+  const m2=text.match(/🎨[^]*?\n([\s\S]*?)(?=\n###|$)/);
+  if(m2){const l=m2[1].trim().split('\n').filter(l=>l.trim()&&!l.startsWith('#'));return l.join(' ').replace(/^[`"'\s]+|[`"'\s]+$/g,'')}
+  return '';
+}
+
+function renderResult(text){
+  // Overview card
+  const ov=extractOverview(text);
+  const ovContainer=document.getElementById('overview-card-container');
+  if(ov){
+    ovContainer.innerHTML=`<div class="overview-card"><div class="glow"></div><div style="display:flex;align-items:flex-start;gap:12px;position:relative"><div style="font-size:28px;flex-shrink:0;margin-top:2px;filter:drop-shadow(0 0 8px rgba(139,92,246,.3))">📋</div><div><div class="ov-title">夢境大綱 Overview</div><div class="ov-body">${marked.parse(ov)}</div></div></div></div>`;
+  }else{ovContainer.innerHTML=''}
+
+  // Detail content (without overview)
+  const detail=extractDetailContent(text);
+  document.getElementById('content-analysis').innerHTML=marked.parse(detail);
+
+  const prompt=extractImagePrompt(text);
+  const styleObj=VISUAL_STYLES.find(s=>s.id===STATE.visualStyle);
+  document.getElementById('prompt-desc').textContent='根據「'+(styleObj?.label||'')+'」風格生成的繪圖指令，可用於 Midjourney、DALL·E、Stable Diffusion 等：';
+  document.getElementById('prompt-text').textContent=prompt||'（未偵測到繪圖指令，請查看完整解析）';
+  document.getElementById('raw-text').textContent=text;
+
+  const tags=document.getElementById('result-tags');
+  let h=`<span style="font-size:11px;color:var(--text-faint);margin-right:6px">${styleObj?.icon||''} ${styleObj?.label||''}</span>`;
+  STATE.selectedMoods.forEach(id=>{const m=MOODS.find(m2=>m2.id===id);if(m)h+=`<span style="font-size:14px" title="${m.label}">${m.icon}</span>`});
+  tags.innerHTML=h;
+  switchTab('analysis');
+}
+
+function copyPrompt(){navigator.clipboard?.writeText(extractImagePrompt(STATE.result||''));const b=document.getElementById('copy-prompt-btn');b.textContent='✅ 已複製！';setTimeout(()=>b.textContent='📋 複製指令',2000)}
+function copyRaw(){navigator.clipboard?.writeText(STATE.result||'');const b=document.getElementById('copy-raw-btn');b.textContent='✅ 已複製！';setTimeout(()=>b.textContent='📋 複製全文',2000)}
+function updateHistoryCount(){document.getElementById('history-count').textContent=STATE.history.length>0?'('+STATE.history.length+')':'';document.getElementById('clear-history-btn').classList.toggle('hidden',STATE.history.length===0)}
+function renderHistory(){
+  const c=document.getElementById('history-list');
+  if(!STATE.history.length){c.innerHTML='<div class="gp" style="padding:50px 24px;text-align:center"><div style="font-size:40px;margin-bottom:12px;opacity:.4">🌙</div><div style="font-size:14px;color:var(--text-dim)">尚未有夢境紀錄</div><div style="font-size:12px;color:#3a3560;margin-top:6px">解析完成後會自動保存</div></div>';return}
+  c.innerHTML=STATE.history.map((e,i)=>{const si=VISUAL_STYLES.find(s=>s.id===e.style)?.icon||'';const mi=e.moods.map(id=>MOODS.find(m=>m.id===id)?.icon||'').join('');return `<div class="history-card" style="margin-bottom:10px" onclick="loadHistoryEntry(${i})"><div class="flex justify-between items-center" style="margin-bottom:8px"><span style="font-size:12px;color:var(--text-dim)">${e.date}</span><div class="flex gap-4"><span style="font-size:12px">${si}</span><span style="font-size:12px">${mi}</span></div></div><div style="font-size:14px;color:#b8b4d0;line-height:1.6">${e.dreamSnippet}</div></div>`}).join('')}
+function loadHistoryEntry(i){const e=STATE.history[i];if(!e)return;STATE.result=e.result;STATE.visualStyle=e.style;STATE.selectedMoods=[...e.moods];renderResult(e.result);document.getElementById('nav-result').classList.remove('hidden');showPage('result')}
+function clearHistory(){if(!confirm('確定清除所有紀錄？'))return;STATE.history=[];try{localStorage.removeItem('dream-canvas-history')}catch(e){}updateHistoryCount();renderHistory()}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
